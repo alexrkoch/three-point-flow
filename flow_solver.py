@@ -2,17 +2,17 @@ import numpy as np
 import pandas as pd
 from geopy import distance
 
-
 def load_data():
   try:
-    df = pd.read_csv('input.csv')
+    df = pd.read_csv('input.csv', header=None)
     print("Input data loaded successfully!")
   except:
-    df = pd.read_csv('sample-data.csv')
+    df = pd.read_csv('sample-data.csv', header=None)
     print("No input data found, using sample data.")
+  return df
 
-load_data()
-
+df = load_data()
+print(df.head())
 # Verify numbers are acceptable (all are numbers, coordinates are positive), leaving this to the end
 
 # 
