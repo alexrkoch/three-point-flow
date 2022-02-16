@@ -5,7 +5,10 @@ different wells.
 
 ## Data Input
 
-- Store data in the root directory in file called `input.csv`
+- You can provide your own data or run the program with the sample dataset.
+- To use your own data, store the data in the root directory in file called
+  `input.csv`. If you provide no `input.csv` file, the program will
+  automatically use the sample dataset.
 - Input data from exactly 3 well locations.
 - Data from each well should be stored in a new row, with no row labels, and in
   the order: `latitude, longitude, hydraulic head`. For example:
