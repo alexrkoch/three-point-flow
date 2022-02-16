@@ -17,3 +17,5 @@ different wells.
 - Latitude and longitude should use the WGS-84 datum, and be in decimal format.
   This is what you get from Google Maps, which is the source of all sample data
   for this project.
+- Hydraulic head must have units of `feet`. For fractions of a foot use decimals
+  (e.g., for 10' 6" use 10.5 feet)
