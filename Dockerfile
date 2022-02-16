@@ -8,5 +8,5 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
-COPY flow-solver.py flow-solver.py
+COPY . . 
 CMD [ "python3", "flow-solver.py"]
