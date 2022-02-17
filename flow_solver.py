@@ -63,8 +63,7 @@ def get_bearing(start_point, end_point):
 
     return bearing
 
-def find_equipotential_midpoint(df, length, bearing):
-  # find sub distance
+def equipotential_midpoint(df, length, bearing):
   high_lat = df.loc[1.0].iloc[0]
   high_lon = df.loc[1.0].iloc[1]
   high_head = df.loc[1.0].iloc[2]
@@ -80,8 +79,9 @@ def find_equipotential_midpoint(df, length, bearing):
                   (high_head - low_head)) * length
 
 
-  equipotentialPoint = geopy.distance.distance(feet=sub_distance).destination((low_lon, low_lat), bearing=bearing)
+  equipotential = distance.distance(feet=sub_distance).destination((low_lat, low_lon), bearing=bearing)
 
+  return equipotential
 
 # def get_flow_azimuth(df, equipotentialPoint)
   # find bearing from equipotentialPoint to middle head point
@@ -95,5 +95,6 @@ df = define_head_rank(df)
 length = length_low_to_high(df)
 low_point, mid_point, high_point = create_geopy_points(df)
 bearing = get_bearing(low_point, high_point)
+equipotential_point = equipotential_midpoint(df, length, bearing)
 
  
