@@ -1,7 +1,6 @@
 import pytest
-import numpy as np
 import pandas as pd
-from geopy import distance
+from geopy import distance, point
 import flow_solver as fs
 
 
@@ -20,6 +19,12 @@ def test_length_low_to_high():
   length = fs.length_low_to_high(df)
   assert length == 264.9634085161976
 
+def test_create_geopy_points():
+  df = fs.load_data()
+  df = fs.define_head_rank(df)
+  low_point, mid_point, high_point = fs.create_geopy_points(df)
+  assert low_point.latitude == 35.765707
+
 def test_get_bearing():
   df = fs.load_data()
   df = fs.define_head_rank(df)
@@ -35,6 +40,15 @@ def test_equipotential_midpoint():
   low_point, mid_point, high_point = fs.create_geopy_points(df)
   bearing = fs.get_bearing(low_point, high_point)
   equipotential_point = fs.equipotential_midpoint(df, length, bearing)
-  assert round(equipotential_point.latitude, 6) == 35.765819
-  assert round(equipotential_point.longitude, 6) == -78.723904
+  assert round(equipotential_point.latitude, 6) == 35.765818
+  assert round(equipotential_point.longitude, 6) == -78.723905
 
+def test_get_flow_azimuth():
+  df = fs.load_data()
+  df = fs.define_head_rank(df)
+  length = fs.length_low_to_high(df)
+  low_point, mid_point, high_point = fs.create_geopy_points(df)
+  bearing = fs.get_bearing(low_point, high_point)
+  equipotential_point = fs.equipotential_midpoint(df, length, bearing)
+  flow_azimuth = fs.get_flow_azimuth(mid_point, equipotential_point, low_point)
+  assert flow_azimuth == 91
