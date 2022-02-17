@@ -60,7 +60,7 @@ def get_bearing(start_point, end_point):
     tan_end = math.tan(end_lat / 2.0 + math.pi / 4.0)
     d_phi = math.log(tan_end / tan_start)
     bearing = (math.degrees(math.atan2(d_lng, d_phi)) + 360.0) % 360.0
-
+    bearing = round(bearing)
     return bearing
 
 def equipotential_midpoint(df, length, bearing):
@@ -83,12 +83,35 @@ def equipotential_midpoint(df, length, bearing):
 
   return equipotential
 
-# def get_flow_azimuth(df, equipotentialPoint)
-  # find bearing from equipotentialPoint to middle head point
+def get_flow_azimuth(mid_point, equipotential_point, low_point):
+  equipotential_bearing = get_bearing(equipotential_point, mid_point)
+  equipotential_to_low_bearing = get_bearing(equipotential_point, low_point)
 
-  # determine what direction the low point is in
+  # create the two possible flow direction scenarios, both normal to the equipotential head line.
+  eb_plus = equipotential_bearing + 90
+  eb_minus = equipotential_bearing - 90
 
-  # add or subtract 90 from the equipotential bearing
+  # correct for values outside of azimuth range
+  if eb_plus >= 360:
+    eb_plus -= 360
+  if eb_minus < 0:
+    eb_minus += 360
+  
+  # determine which makes an acute angle with equipotential_to_low_bearing.
+  if equipotential_to_low_bearing < eb_plus:
+    angle_plus = equipotential_to_low_bearing - eb_plus
+  else: 
+    angle_plus = eb_plus - equipotential_to_low_bearing
+  angle_plus = abs(angle_plus)
+  if angle_plus > 180:
+    angle_plus = abs(angle_plus - 360)
+  if angle_plus < 90:
+    return eb_plus
+  elif angle_plus == 90:
+    return equipotential_to_low_bearing
+  else:
+    return eb_minus
+
 
 df = load_data()
 df = define_head_rank(df)
@@ -96,5 +119,5 @@ length = length_low_to_high(df)
 low_point, mid_point, high_point = create_geopy_points(df)
 bearing = get_bearing(low_point, high_point)
 equipotential_point = equipotential_midpoint(df, length, bearing)
-
- 
+flow_azimuth = get_flow_azimuth(mid_point, equipotential_point, low_point)
+print(f"Groundwater in the area is flowing towards an azimuth of {flow_azimuth}\N{DEGREE SIGN}")
