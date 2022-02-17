@@ -1,4 +1,4 @@
-import numpy as np
+import math
 import pandas as pd
 from geopy import distance, point
 
@@ -17,28 +17,17 @@ def define_head_rank(df):
   df = df.set_index('head_rank')
   return df
 
-def length_highest_to_lowest(df):
+def length_low_to_high(df):
   highest = (df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
   lowest = (df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
   length = distance.distance(highest, lowest).feet
   return length
 
-def get_bearing(df):
+def bearing_low_to_high(df):
   # Function modified from YAFS (https://www.programcreek.com/python/?code=acsicuib%2FYAFS%2FYAFS-master%2Fsrc%2Ftrackanimation%2Futils.py)
-  """
-  Calculates the bearing between two points.
 
-  Parameters
-  ----------
-  start_point: geopy.Point
-  end_point: geopy.Point
-
-  Returns
-  -------
-  point: int
-      Bearing in degrees between the start and end points.
-  """
   start_point = point.Point(df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
+  end_point = point.Point(df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
   start_lat = math.radians(start_point.latitude)
   start_lng = math.radians(start_point.longitude)
   end_lat = math.radians(end_point.latitude)
@@ -58,7 +47,7 @@ def get_bearing(df):
 
   return bearing
 
-def find_equipotential_midpoint(df, length):
+def find_equipotential_midpoint(df, length, bearing):
   # find sub distance
   high_lat = df.loc[1.0].iloc[0]
   high_lon = df.loc[1.0].iloc[1]
@@ -87,6 +76,8 @@ def find_equipotential_midpoint(df, length):
 
 df = load_data()
 df = define_head_rank(df)
-length_high_to_low = length_highest_to_lowest(df)
+length = length_low_to_high(df)
 
+bearing = bearing_low_to_high(df)
+print(bearing)
  
