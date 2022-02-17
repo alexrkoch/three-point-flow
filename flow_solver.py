@@ -23,29 +23,45 @@ def length_low_to_high(df):
   length = distance.distance(highest, lowest).feet
   return length
 
-def bearing_low_to_high(df):
-  # Function modified from YAFS (https://www.programcreek.com/python/?code=acsicuib%2FYAFS%2FYAFS-master%2Fsrc%2Ftrackanimation%2Futils.py)
+def create_geopy_points(df):
+  low_point = point.Point(df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
+  mid_point = point.Point(df.loc[2.0].iloc[0], df.loc[2.0].iloc[1])
+  high_point = point.Point(df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
+  return low_point, mid_point, high_point
 
-  start_point = point.Point(df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
-  end_point = point.Point(df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
-  start_lat = math.radians(start_point.latitude)
-  start_lng = math.radians(start_point.longitude)
-  end_lat = math.radians(end_point.latitude)
-  end_lng = math.radians(end_point.longitude)
+def get_bearing(start_point, end_point):
+    # Function from YAFS (https://www.programcreek.com/python/?project_name=acsicuib%2FYAFS)
+    """
+    Calculates the bearing between two points.
 
-  d_lng = end_lng - start_lng
-  if abs(d_lng) > math.pi:
-      if d_lng > 0.0:
-          d_lng = -(2.0 * math.pi - d_lng)
-      else:
-          d_lng = (2.0 * math.pi + d_lng)
+    Parameters
+    ----------
+    start_point: geopy.Point
+    end_point: geopy.Point
 
-  tan_start = math.tan(start_lat / 2.0 + math.pi / 4.0)
-  tan_end = math.tan(end_lat / 2.0 + math.pi / 4.0)
-  d_phi = math.log(tan_end / tan_start)
-  bearing = (math.degrees(math.atan2(d_lng, d_phi)) + 360.0) % 360.0
+    Returns
+    -------
+    point: int
+        Bearing in degrees between the start and end points.
+    """
+    start_lat = math.radians(start_point.latitude)
+    start_lng = math.radians(start_point.longitude)
+    end_lat = math.radians(end_point.latitude)
+    end_lng = math.radians(end_point.longitude)
 
-  return bearing
+    d_lng = end_lng - start_lng
+    if abs(d_lng) > math.pi:
+        if d_lng > 0.0:
+            d_lng = -(2.0 * math.pi - d_lng)
+        else:
+            d_lng = (2.0 * math.pi + d_lng)
+
+    tan_start = math.tan(start_lat / 2.0 + math.pi / 4.0)
+    tan_end = math.tan(end_lat / 2.0 + math.pi / 4.0)
+    d_phi = math.log(tan_end / tan_start)
+    bearing = (math.degrees(math.atan2(d_lng, d_phi)) + 360.0) % 360.0
+
+    return bearing
 
 def find_equipotential_midpoint(df, length, bearing):
   # find sub distance
@@ -77,7 +93,7 @@ def find_equipotential_midpoint(df, length, bearing):
 df = load_data()
 df = define_head_rank(df)
 length = length_low_to_high(df)
+low_point, mid_point, high_point = create_geopy_points(df)
+bearing = get_bearing(low_point, high_point)
 
-bearing = bearing_low_to_high(df)
-print(bearing)
  

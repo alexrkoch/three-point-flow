@@ -20,8 +20,9 @@ def test_length_low_to_high():
   length = fs.length_low_to_high(df)
   assert length == 264.9634085161976
 
-def test_bearing_low_to_high():
+def test_get_bearing():
   df = fs.load_data()
   df = fs.define_head_rank(df)
-  bearing = fs.bearing_low_to_high(df)
+  low_point, mid_point, high_point = fs.create_geopy_points(df)
+  bearing = fs.get_bearing(low_point, high_point)
   assert bearing == 286.1800749096567
