@@ -35,6 +35,6 @@ def test_equipotential_midpoint():
   low_point, mid_point, high_point = fs.create_geopy_points(df)
   bearing = fs.get_bearing(low_point, high_point)
   equipotential_point = fs.equipotential_midpoint(df, length, bearing)
-  assert equipotential_point.latitude == 35.765819107004624
-  assert equipotential_point.longitude == -78.72390407772019
+  assert round(equipotential_point.latitude, 6) == 35.765819
+  assert round(equipotential_point.longitude, 6) == -78.723904
 
