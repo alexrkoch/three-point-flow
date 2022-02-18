@@ -17,20 +17,23 @@ def define_head_rank(df):
   df = df.set_index('head_rank')
   return df
 
-def length_low_to_high(df):
-  highest = (df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
-  lowest = (df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
-  length = distance.distance(highest, lowest).feet
-  return length
-
 def create_geopy_points(df):
   low_point = point.Point(df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
   mid_point = point.Point(df.loc[2.0].iloc[0], df.loc[2.0].iloc[1])
   high_point = point.Point(df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
   return low_point, mid_point, high_point
 
+def create_head_variables(df):
+  high_head = df.loc[1.0].iloc[2]
+  mid_head = df.loc[2.0].iloc[2]
+  low_head = df.loc[3.0].iloc[2]
+  return low_head, mid_head, high_head
+
+def length_low_to_high(low_point, high_point):
+  return distance.distance(low_point, high_point).feet
+
 def get_bearing(start_point, end_point):
-    # Function from YAFS (https://www.programcreek.com/python/?project_name=acsicuib%2FYAFS)
+    # Function copied from YAFS (https://www.programcreek.com/python/?project_name=acsicuib%2FYAFS)
     """
     Calculates the bearing between two points.
 
@@ -63,25 +66,9 @@ def get_bearing(start_point, end_point):
     bearing = round(bearing)
     return bearing
 
-def equipotential_midpoint(df, length, bearing):
-  high_lat = df.loc[1.0].iloc[0]
-  high_lon = df.loc[1.0].iloc[1]
-  high_head = df.loc[1.0].iloc[2]
-
-  mid_lat = df.loc[2.0].iloc[0]
-  mid_lon = df.loc[2.0].iloc[1]
-  mid_head = df.loc[2.0].iloc[2]
-
-  low_lat = df.loc[3.0].iloc[0]
-  low_lon = df.loc[3.0].iloc[1]
-  low_head = df.loc[3.0].iloc[2]
-  sub_distance = ((mid_head - low_head) / 
-                  (high_head - low_head)) * length
-
-
-  equipotential = distance.distance(feet=sub_distance).destination((low_lat, low_lon), bearing=bearing)
-
-  return equipotential
+def equipotential_midpoint(length, bearing):
+  sub_distance = ((mid_head - low_head) / (high_head - low_head)) * length
+  return distance.distance(feet=sub_distance).destination((low_point), bearing=bearing)
 
 def get_flow_azimuth(mid_point, equipotential_point, low_point):
   equipotential_bearing = get_bearing(equipotential_point, mid_point)
@@ -115,9 +102,10 @@ def get_flow_azimuth(mid_point, equipotential_point, low_point):
 
 df = load_data()
 df = define_head_rank(df)
-length = length_low_to_high(df)
 low_point, mid_point, high_point = create_geopy_points(df)
+length = length_low_to_high(high_point, low_point)
 bearing = get_bearing(low_point, high_point)
-equipotential_point = equipotential_midpoint(df, length, bearing)
+low_head, mid_head, high_head = create_head_variables(df)
+equipotential_point = equipotential_midpoint(length, bearing)
 flow_azimuth = get_flow_azimuth(mid_point, equipotential_point, low_point)
 print(f"Groundwater in the area is flowing towards an azimuth of {flow_azimuth}\N{DEGREE SIGN}")
