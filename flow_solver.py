@@ -17,17 +17,14 @@ def define_head_rank(df):
   df = df.set_index('head_rank')
   return df
 
-def length_low_to_high(df):
-  highest = (df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
-  lowest = (df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
-  length = distance.distance(highest, lowest).feet
-  return length
-
 def create_geopy_points(df):
   low_point = point.Point(df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
   mid_point = point.Point(df.loc[2.0].iloc[0], df.loc[2.0].iloc[1])
   high_point = point.Point(df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
   return low_point, mid_point, high_point
+
+def length_low_to_high(high_point, low_point):
+  return distance.distance(high_point, low_point).feet
 
 def get_bearing(start_point, end_point):
     # Function from YAFS (https://www.programcreek.com/python/?project_name=acsicuib%2FYAFS)
@@ -115,8 +112,8 @@ def get_flow_azimuth(mid_point, equipotential_point, low_point):
 
 df = load_data()
 df = define_head_rank(df)
-length = length_low_to_high(df)
 low_point, mid_point, high_point = create_geopy_points(df)
+length = length_low_to_high(high_point, low_point)
 bearing = get_bearing(low_point, high_point)
 equipotential_point = equipotential_midpoint(df, length, bearing)
 flow_azimuth = get_flow_azimuth(mid_point, equipotential_point, low_point)

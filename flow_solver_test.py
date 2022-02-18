@@ -13,31 +13,32 @@ def test_define_head_rank():
   df = fs.define_head_rank(df)
   assert df.loc[1.0].iloc[2] >= df.loc[2.0].iloc[2] >= df.loc[3.0].iloc[2]
 
-def test_length_low_to_high():
-  df = fs.load_data()
-  df = fs.define_head_rank(df)
-  length = fs.length_low_to_high(df)
-  assert length == 264.9634085161976
-
 def test_create_geopy_points():
   df = fs.load_data()
   df = fs.define_head_rank(df)
   low_point, mid_point, high_point = fs.create_geopy_points(df)
   assert low_point.latitude == 35.765707
 
+def test_length_low_to_high():
+  df = fs.load_data()
+  df = fs.define_head_rank(df)
+  low_point, mid_point, high_point = fs.create_geopy_points(df)
+  length = fs.length_low_to_high(high_point, low_point)
+  assert length == 264.9634085161976
+
 def test_get_bearing():
   df = fs.load_data()
   df = fs.define_head_rank(df)
-  length = fs.length_low_to_high(df)
   low_point, mid_point, high_point = fs.create_geopy_points(df)
+  length = fs.length_low_to_high(high_point, low_point)
   bearing = fs.get_bearing(low_point, high_point)
   assert round(bearing) == 286
 
 def test_equipotential_midpoint():
   df = fs.load_data()
   df = fs.define_head_rank(df)
-  length = fs.length_low_to_high(df)
   low_point, mid_point, high_point = fs.create_geopy_points(df)
+  length = fs.length_low_to_high(high_point, low_point)
   bearing = fs.get_bearing(low_point, high_point)
   equipotential_point = fs.equipotential_midpoint(df, length, bearing)
   assert round(equipotential_point.latitude, 6) == 35.765818
@@ -46,8 +47,8 @@ def test_equipotential_midpoint():
 def test_get_flow_azimuth():
   df = fs.load_data()
   df = fs.define_head_rank(df)
-  length = fs.length_low_to_high(df)
   low_point, mid_point, high_point = fs.create_geopy_points(df)
+  length = fs.length_low_to_high(high_point, low_point)
   bearing = fs.get_bearing(low_point, high_point)
   equipotential_point = fs.equipotential_midpoint(df, length, bearing)
   flow_azimuth = fs.get_flow_azimuth(mid_point, equipotential_point, low_point)
