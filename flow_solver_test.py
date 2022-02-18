@@ -5,12 +5,18 @@ import flow_solver as fs
 
 
 def test_load_data():
+  # consider multiple tests for each of the try and except block.
+  # be able to run without needing the file 
+  # mock pd.read_csv function
+  # consider testing passing data through the CLI.
+  ### python3 main.py --file ./my_file.csv
   df = fs.load_data()
   assert type(df.iloc[0]) == int or float
 
 def test_define_head_rank():
+  # make a pandas df in this block
   df = fs.load_data()
-  df = fs.define_head_rank(df)
+  df = fs.__define_head_rank(df)
   assert df.loc[1.0].iloc[2] >= df.loc[2.0].iloc[2] >= df.loc[3.0].iloc[2]
 
 def test_create_geopy_points():
@@ -40,6 +46,9 @@ def test_get_bearing():
   bearing = fs.get_bearing(low_point, high_point)
   assert round(bearing) == 286
 
+# test_get_bearing_returns_...expected_behavior
+# be able to read test name and know what went wrong under what conditions. 
+
 def test_equipotential_midpoint():
   df = fs.load_data()
   df = fs.define_head_rank(df)
@@ -59,3 +68,6 @@ def test_get_flow_azimuth():
   equipotential_point = fs.equipotential_midpoint(length, bearing)
   flow_azimuth = fs.get_flow_azimuth(mid_point, equipotential_point, low_point)
   assert flow_azimuth == 91
+
+  # end-to-end test. (smoke test)
+  # separate out into a different suite.
