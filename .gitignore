@@ -11,6 +11,8 @@ input.csv
 input_.csv
 input3.csv
 
+.vscode/
+
 # Distribution / packaging
 .Python
 build/
