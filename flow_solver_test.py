@@ -20,11 +20,14 @@ def test_create_geopy_points():
   low_point, mid_point, high_point = fs.__create_geopy_points(df)
   assert low_point.latitude == 35.765707
 
-# def test_create_head_variables():
-#   df = fs.__load_data()
-#   df = fs.__define_head_rank(df)
-#   low_head, mid_head, high_head = fs.__create_head_variables(df)
-#   assert low_head == 360
+def test_create_head_variables():
+  df = pd.DataFrame({"lat":[35.765909,35.765341,35.765707],
+                    "lon":[-78.724288,-78.723918,-78.72343],
+                    "head":[387.5,375.2,360],
+                    "head_rank":[1.0,2.0,3.0]})
+  df = df.set_index('head_rank')
+  low_head, mid_head, high_head = fs.__create_head_variables(df)
+  assert low_head == 360
 
 # def test_length_low_to_high():
 #   df = fs.__load_data()
