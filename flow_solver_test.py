@@ -11,11 +11,14 @@ def test_define_head_rank():
   df = fs.__define_head_rank(df)
   assert df.loc[1.0].iloc[2] >= df.loc[2.0].iloc[2] >= df.loc[3.0].iloc[2]
 
-# def test_create_geopy_points():
-#   df = fs.__load_data()
-#   df = fs.__define_head_rank(df)
-#   low_point, mid_point, high_point = fs.__create_geopy_points(df)
-#   assert low_point.latitude == 35.765707
+def test_create_geopy_points():
+  df = pd.DataFrame({"lat":[35.765909,35.765341,35.765707],
+                    "lon":[-78.724288,-78.723918,-78.72343],
+                    "head":[387.5,375.2,360],
+                    "head_rank":[1.0,2.0,3.0]})
+  df = df.set_index('head_rank')
+  low_point, mid_point, high_point = fs.__create_geopy_points(df)
+  assert low_point.latitude == 35.765707
 
 # def test_create_head_variables():
 #   df = fs.__load_data()
