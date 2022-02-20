@@ -12,10 +12,20 @@ def get_flow_direction_from_three_wells(df):
   flow_azimuth = __get_flow_azimuth(mid_point, equipotential_point, low_point)
   return flow_azimuth
 
+def __load_data():
+  try:
+    df = pd.read_csv('input.csv', header=None)
+    print("Input data loaded successfully!")
+  except:
+    df = pd.read_csv('sample-data.csv', header=None)
+    print("No input data found, using sample data.")
+  return df
+
 def __define_head_rank(df):
   # highest head 'head_rank'= 1.0, lowest = 3.0
   df['head_rank'] = df.iloc[:, 2].rank(ascending = 0)
   df = df.set_index('head_rank')
+  return df
 
 def __create_geopy_points(df):
   low_point = point.Point(df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
