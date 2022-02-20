@@ -1,6 +1,7 @@
-import flow_solver
+import flow_solver as fs
+import pandas as pd
 
-def load_data():
+def __load_data():
   try:
     df = pd.read_csv('input.csv', header=None)
     print("Input data loaded successfully!")
@@ -10,6 +11,6 @@ def load_data():
   return df
 
 if __name__ == '__main__':
-  df = load_data()
-  flow_azimuth = get_flow_direction_frome_three_wells(df)
+  df = __load_data()
+  flow_azimuth = fs.get_flow_direction_from_three_wells(df)
   print(f"Groundwater in the area is flowing towards an azimuth of {flow_azimuth}\N{DEGREE SIGN}")

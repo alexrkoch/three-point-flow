@@ -8,18 +8,9 @@ def get_flow_direction_from_three_wells(df):
   length = __length_low_to_high(high_point, low_point)
   bearing = __get_bearing(low_point, high_point)
   low_head, mid_head, high_head = __create_head_variables(df)
-  equipotential_point = __equipotential_midpoint(length, bearing)
+  equipotential_point= __equipotential_midpoint(low_point, low_head, mid_head, high_head, length, bearing)
   flow_azimuth = __get_flow_azimuth(mid_point, equipotential_point, low_point)
   return flow_azimuth
-
-def __load_data():
-  try:
-    df = pd.read_csv('input.csv', header=None)
-    print("Input data loaded successfully!")
-  except:
-    df = pd.read_csv('sample-data.csv', header=None)
-    print("No input data found, using sample data.")
-  return df
 
 def __define_head_rank(df):
   # highest head 'head_rank'= 1.0, lowest = 3.0
@@ -77,13 +68,13 @@ def __get_bearing(start_point, end_point):
     bearing = round(bearing)
     return bearing
 
-def __equipotential_midpoint(length, bearing):
+def __equipotential_midpoint(low_point, low_head, mid_head, high_head, length, bearing):
   sub_distance = ((mid_head - low_head) / (high_head - low_head)) * length
   return distance.distance(feet=sub_distance).destination((low_point), bearing=bearing)
 
 def __get_flow_azimuth(mid_point, equipotential_point, low_point):
-  equipotential_bearing = get_bearing(equipotential_point, mid_point)
-  equipotential_to_low_bearing = get_bearing(equipotential_point, low_point)
+  equipotential_bearing = __get_bearing(equipotential_point, mid_point)
+  equipotential_to_low_bearing = __get_bearing(equipotential_point, low_point)
 
   # create the two possible flow direction scenarios, both normal to the equipotential head line.
   eb_plus = equipotential_bearing + 90
