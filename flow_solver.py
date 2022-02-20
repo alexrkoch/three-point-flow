@@ -2,37 +2,38 @@ import math
 import pandas as pd
 from geopy import distance, point
 
-def load_data():
-  try:
-    df = pd.read_csv('input.csv', header=None)
-    print("Input data loaded successfully!")
-  except:
-    df = pd.read_csv('sample-data.csv', header=None)
-    print("No input data found, using sample data.")
-  return df
+def get_flow_direction_from_three_wells(df):
+  df = __define_head_rank(df)
+  low_point, mid_point, high_point = __create_geopy_points(df)
+  length = __length_low_to_high(high_point, low_point)
+  bearing = __get_bearing(low_point, high_point)
+  low_head, mid_head, high_head = __create_head_variables(df)
+  equipotential_point= __equipotential_midpoint(low_point, low_head, mid_head, high_head, length, bearing)
+  flow_azimuth = __get_flow_azimuth(mid_point, equipotential_point, low_point)
+  return flow_azimuth
 
-def define_head_rank(df):
+def __define_head_rank(df):
   # highest head 'head_rank'= 1.0, lowest = 3.0
   df['head_rank'] = df.iloc[:, 2].rank(ascending = 0)
   df = df.set_index('head_rank')
   return df
 
-def create_geopy_points(df):
+def __create_geopy_points(df):
   low_point = point.Point(df.loc[3.0].iloc[0], df.loc[3.0].iloc[1])
   mid_point = point.Point(df.loc[2.0].iloc[0], df.loc[2.0].iloc[1])
   high_point = point.Point(df.loc[1.0].iloc[0], df.loc[1.0].iloc[1])
   return low_point, mid_point, high_point
 
-def create_head_variables(df):
+def __create_head_variables(df):
   high_head = df.loc[1.0].iloc[2]
   mid_head = df.loc[2.0].iloc[2]
   low_head = df.loc[3.0].iloc[2]
   return low_head, mid_head, high_head
 
-def length_low_to_high(low_point, high_point):
+def __length_low_to_high(low_point, high_point):
   return distance.distance(low_point, high_point).feet
 
-def get_bearing(start_point, end_point):
+def __get_bearing(start_point, end_point):
     # Function copied from YAFS (https://www.programcreek.com/python/?project_name=acsicuib%2FYAFS)
     """
     Calculates the bearing between two points.
@@ -55,6 +56,7 @@ def get_bearing(start_point, end_point):
     d_lng = end_lng - start_lng
     if abs(d_lng) > math.pi:
         if d_lng > 0.0:
+            # math.tau instead of 2.0 * math.pi
             d_lng = -(2.0 * math.pi - d_lng)
         else:
             d_lng = (2.0 * math.pi + d_lng)
@@ -66,19 +68,23 @@ def get_bearing(start_point, end_point):
     bearing = round(bearing)
     return bearing
 
-def equipotential_midpoint(length, bearing):
+def __equipotential_midpoint(low_point, low_head, mid_head, high_head, length, bearing):
   sub_distance = ((mid_head - low_head) / (high_head - low_head)) * length
   return distance.distance(feet=sub_distance).destination((low_point), bearing=bearing)
 
-def get_flow_azimuth(mid_point, equipotential_point, low_point):
-  equipotential_bearing = get_bearing(equipotential_point, mid_point)
-  equipotential_to_low_bearing = get_bearing(equipotential_point, low_point)
+def __get_flow_azimuth(mid_point, equipotential_point, low_point):
+  equipotential_bearing = __get_bearing(equipotential_point, mid_point)
+  equipotential_to_low_bearing = __get_bearing(equipotential_point, low_point)
 
   # create the two possible flow direction scenarios, both normal to the equipotential head line.
   eb_plus = equipotential_bearing + 90
   eb_minus = equipotential_bearing - 90
 
   # correct for values outside of azimuth range
+  # consider replacing with mod 360.
+  # eb_plus = eb_plus % 360
+  # eb_minus = eb_minus % 360
+  # eb_plus %= 360
   if eb_plus >= 360:
     eb_plus -= 360
   if eb_minus < 0:
@@ -98,14 +104,3 @@ def get_flow_azimuth(mid_point, equipotential_point, low_point):
     return equipotential_to_low_bearing
   else:
     return eb_minus
-
-
-df = load_data()
-df = define_head_rank(df)
-low_point, mid_point, high_point = create_geopy_points(df)
-length = length_low_to_high(high_point, low_point)
-bearing = get_bearing(low_point, high_point)
-low_head, mid_head, high_head = create_head_variables(df)
-equipotential_point = equipotential_midpoint(length, bearing)
-flow_azimuth = get_flow_azimuth(mid_point, equipotential_point, low_point)
-print(f"Groundwater in the area is flowing towards an azimuth of {flow_azimuth}\N{DEGREE SIGN}")
