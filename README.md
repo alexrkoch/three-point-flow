@@ -1,7 +1,29 @@
-# three-point-flow
+# Three Point Flow
 
 Calculate groundwater flow direction given 3 hydraulic head measurements at
 different wells.
+
+## Docker Image
+
+The docker image for this project can be found in my Docker Hub Repository:
+https://hub.docker.com/repository/docker/alexrkoch/three-point-flow
+
+The dockerized version of the program only runs the sample data. To run the
+Docker image make sure Docker is running, then simply enter into the command
+line:
+
+```
+docker run alexrkoch/three-point-flow
+```
+
+To use your own input data:
+
+1. Follow the steps below in **Data Input** to make sure your data format is
+   correct.
+2. Install the dependencies in `requirements.txt`
+3. Download `flow_solver.py` and `main.py` from this repo into the same
+   directory as your input data
+4. Run `main.py`.
 
 ## Data Input
 
