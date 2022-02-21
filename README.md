@@ -18,11 +18,10 @@ docker run alexrkoch/three-point-flow
 
 To use your own input data:
 
-1. Follow the steps below in **Data Input** to make sure your data format is
+1. Clone this repo to your local machine.
+2. Follow the steps below in **Data Input** to make sure your data format is
    correct.
-2. Install the dependencies in `requirements.txt`
-3. Download `flow_solver.py` and `main.py` from this repo into the same
-   directory as your input data
+3. Install the dependencies in `requirements.txt`.
 4. Run `main.py`.
 
 ## Data Input
