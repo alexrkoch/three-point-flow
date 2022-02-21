@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.8-slim-buster
+WORKDIR /app
 
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
